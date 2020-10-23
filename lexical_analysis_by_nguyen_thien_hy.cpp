@@ -12,7 +12,7 @@ typedef enum { //Cac loai token su dung trong PL/0
 	NONE=0, IDENT, NUMBER,
 	BEGIN, CALL, CONST, DO,  ELSE, END, FOR, IF, ODD,
 	PROCEDURE, PROGRAM, THEN, TO, VAR, WHILE,
-	PLUS, MINUS, TIMES, SLASH, EQU, NEQ, LSS, LEQ, GTR, GEQ, LPARENT, RPARENT, LBRACK, RBRACK, PERIOD, COMMA, SEMICOLON,  ASSIGN, PERCENT
+	PLUS, MINUS, TIMES, SLASH, EQU, NEQ, LSS, LEQ, GTR, GEQ, LPARENT, RPARENT, LBRACK, RBRACK, PERIOD, COMMA, SEMICOLON,  ASSIGN, PERCENT, COMMENT
 } TokenType;
 
 struct State{
@@ -315,12 +315,26 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		char lexical_fix[length_lexical];
-		for(int i = 0; i < length_lexical; i ++){
-			lexical_fix[i] = lexical_array[i];
+		if(ch == ')'){
+			length_lexical = 2;
+			lexical_array[index] = ch;
+			ch = getCh(str, current_index + 1);
+			current_index = current_index + 1;
+			char lexical_fix[length_lexical];
+			for(int i = 0; i < length_lexical; i ++){
+				lexical_fix[i] = lexical_array[i];
+			}
+			printf("COMMENT\n");
+			return create_state(COMMENT, lexical_fix, ch, current_index, length_lexical);
 		}
-		printf("TIMES\n");
-		return create_state(TIMES, lexical_fix, ch, current_index, length_lexical);
+		else{
+			char lexical_fix[length_lexical];
+			for(int i = 0; i < length_lexical; i ++){
+				lexical_fix[i] = lexical_array[i];
+			}
+			printf("TIMES\n");
+			return create_state(TIMES, lexical_fix, ch, current_index, length_lexical);
+		}
 	}
 	else if(ch == '>'){
 		length_lexical = 1;
@@ -405,12 +419,26 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		char lexical_fix[length_lexical];
-		for(int i = 0; i < length_lexical; i ++){
-			lexical_fix[i] = lexical_array[i];
+		if(ch == '*'){
+			length_lexical = 2;
+			lexical_array[index] = ch;
+			ch = getCh(str, current_index + 1);
+			current_index = current_index + 1;
+			char lexical_fix[length_lexical];
+			for(int i = 0; i < length_lexical; i ++){
+				lexical_fix[i] = lexical_array[i];
+			}
+			printf("COMMENT\n");
+			return create_state(COMMENT, lexical_fix, ch, current_index, length_lexical);
 		}
-		printf("LPARENT\n");
-		return create_state(LPARENT, lexical_fix, ch, current_index, length_lexical);
+		else{
+			char lexical_fix[length_lexical];
+			for(int i = 0; i < length_lexical; i ++){
+				lexical_fix[i] = lexical_array[i];
+			}
+			printf("LPARENT\n");
+			return create_state(LPARENT, lexical_fix, ch, current_index, length_lexical);
+		}
 	}
 	else if(ch == '['){
 		length_lexical = 1;
