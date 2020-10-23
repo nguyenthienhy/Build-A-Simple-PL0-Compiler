@@ -1,7 +1,10 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<cstring>
 #define MAX_IDENT_LEN 10
-#define MAX_CHARACTER 10
+#define MAX_CHARACTER_IN_TOKEN 10
+#define MAX_LINES 100
+#define MAX_CHARACTER_IN_LINE 256
 
 typedef enum { //Cac loai token su dung trong PL/0
 	NONE=0, IDENT, NUMBER,
@@ -15,14 +18,16 @@ struct State{
 	char* lexical;
 	char current_char;
 	int current_index;
+	int number_character;
 };
 
-State create_state(TokenType nameToken, char* lexical, char current_char, char current_index){
+State create_state(TokenType nameToken, char* lexical, char current_char, char current_index, int number_character){
 	State state;
 	state.nameToken = IDENT;
 	state.lexical = lexical;
 	state.current_char = current_char;
 	state.current_index = current_index;
+	state.number_character = number_character;
 	return state;
 }
 
@@ -52,195 +57,230 @@ char getCh(char* str, int index){
 }
 
 State getToken(char* letters, char* digits, char* str, char ch, int current_index){
-	char lexical_array[MAX_CHARACTER];
+	char lexical_array[MAX_CHARACTER_IN_TOKEN];
 	int index = 0;
+	int length_lexical = 0;
 	if(ch == ' '){
 		while(ch == ' '){
+			length_lexical += 1;
 			lexical_array[index] = ch;
 			index += 1;
 			ch = getCh(str, current_index + 1);
 			current_index = current_index + 1;
 		}
-		return create_state(NONE, lexical_array, ch, current_index);
+		return create_state(NONE, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(isLetter(letters, ch) == 1){
 		while(isLetter(letters, ch) == 1 || isDigit(digits, ch) == 1){
+			length_lexical += 1;
 			lexical_array[index] = ch;
 			index += 1;
 			ch = getCh(str, current_index + 1);
 			current_index = current_index + 1;
 		}
-		return create_state(IDENT, lexical_array, ch, current_index);
+		printf("IDENT\n");
+		return create_state(IDENT, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(isDigit(digits, ch) == 1){
 		while(isDigit(digits, ch) == 1){
+			length_lexical += 1;
 			lexical_array[index] = ch;
 			index += 1;
 			ch = getCh(str, current_index + 1);
 			current_index = current_index + 1;
 		}
-		return create_state(NUMBER, lexical_array, ch, current_index);
+		printf("NUMBER\n");
+		return create_state(NUMBER, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == '+'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(PLUS, lexical_array, ch, current_index);
+		printf("PLUS");
+		return create_state(PLUS, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == '*'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(TIMES, lexical_array, ch, current_index);
+		printf("TIMES");
+		return create_state(TIMES, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == '>'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		index += 1;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
 		if(ch == '='){
+			length_lexical = 2;
 			lexical_array[index] = ch;
 			ch = getCh(str, current_index + 1);
 			current_index = current_index + 1;
-			return create_state(GEQ, lexical_array, ch, current_index);
+			printf("GEQ");
+			return create_state(GEQ, lexical_array, ch, current_index, length_lexical);
 		}
 		else{
-			return create_state(GTR, lexical_array, ch, current_index);
+            printf("GTR");
+			return create_state(GTR, lexical_array, ch, current_index, length_lexical);
 		}
 	}
 	else if(ch == '<'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		index += 1;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
 		if(ch == '='){
+			length_lexical = 2;
 			lexical_array[index] = ch;
 			ch = getCh(str, current_index + 1);
 			current_index = current_index + 1;
-			return create_state(LEQ, lexical_array, ch, current_index);
+			printf("LEQ");
+			return create_state(LEQ, lexical_array, ch, current_index, length_lexical);
 		}
 		else if(ch == '>'){
+			length_lexical = 2;
 			lexical_array[index] = ch;
 			ch = getCh(str, current_index + 1);
 			current_index = current_index + 1;
-			return create_state(NEQ, lexical_array, ch, current_index);
+			printf("NEQ");
+			return create_state(NEQ, lexical_array, ch, current_index, length_lexical);
 		}
 		else{
-			return create_state(LSS, lexical_array, ch, current_index);
+            printf("LSS");
+			return create_state(LSS, lexical_array, ch, current_index, length_lexical);
 		}
 	}
 	else if(ch == '='){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(EQU, lexical_array, ch, current_index);
+		printf("EQU");
+		return create_state(EQU, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == '('){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(LPARENT, lexical_array, ch, current_index);
+		printf("LPARENT");
+		return create_state(LPARENT, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == '['){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(LBRACK, lexical_array, ch, current_index);
+		printf("LBRACK");
+		return create_state(LBRACK, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == ':'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		index += 1;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
 		if(ch == '='){
+			length_lexical = 2;
 			lexical_array[index] = ch;
 			ch = getCh(str, current_index + 1);
 			current_index = current_index + 1;
-			return create_state(ASSIGN, lexical_array, ch, current_index);
+			printf("ASSIGN");
+			return create_state(ASSIGN, lexical_array, ch, current_index, length_lexical);
 		}
 	}
 	else if(ch == ','){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(COMMA, lexical_array, ch, current_index);
+		printf("COMMA\n");
+		return create_state(COMMA, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == '%'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(PERCENT, lexical_array, ch, current_index);
+		printf("PERCENT");
+		return create_state(PERCENT, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == '-'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(MINUS, lexical_array, ch, current_index);
+		printf("MINUS");
+		return create_state(MINUS, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == '/'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(SLASH, lexical_array, ch, current_index);
+		printf("SLASH");
+		return create_state(SLASH, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == ')'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(RPARENT, lexical_array, ch, current_index);
+		printf("RPARENT");
+		return create_state(RPARENT, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == ']'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(RBRACK, lexical_array, ch, current_index);
+		printf("RBRACK");
+		return create_state(RBRACK, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == ';'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(SEMICOLON, lexical_array, ch, current_index);
+		printf("SEMICOLON");
+		return create_state(SEMICOLON, lexical_array, ch, current_index, length_lexical);
 	}
 	else if(ch == '.'){
+		length_lexical = 1;
 		lexical_array[index] = ch;
 		ch = getCh(str, current_index + 1);
 		current_index = current_index + 1;
-		return create_state(PERIOD, lexical_array, ch, current_index);
+		printf("PERIOD");
+		return create_state(PERIOD, lexical_array, ch, current_index, length_lexical);
 	}
-	else{
+	else if(ch == '\n'){
+		length_lexical = 1;
 		lexical_array[index] = '$';
-		return create_state(NONE, lexical_array, ch, current_index);
+		current_index = current_index + 1;
+		return create_state(NONE, lexical_array, ch, current_index, length_lexical);
 	}
 }
 
 
-int main(){
+int main(int argc, char* argv[]){
+    char line[MAX_CHARACTER_IN_LINE];
     FILE* file = fopen("exam.txt", "r");
-    char* lines[100];
-    char line[256];
-    int index = 0;
     while (fgets(line, sizeof(line), file)) {
-		lines[index] = line;
-		index = index + 1;
+        int len = strlen(line); // do dai cua dong trong file
+        State result = getToken(letters, digits, line, line[0], 0);
+        char current_character = result.current_char;
+        int current_index = result.current_index;
+        while(current_index < len){
+            State result_tmp = getToken(letters, digits, line, current_character, current_index);
+            current_character = result_tmp.current_char;
+            current_index = result_tmp.current_index;
+        }
+        printf("\n");
     }
-    //printf("%s", lines[1]);
-	char* current_ch = lines[1];
-	int current_index = 0;
-	State result = getToken(letters, digits, current_ch, current_ch[0], current_index);
-	for(int i = 0; i < 3; i ++){
-		//printf("%c", result.lexical[i]);
-	}
-	char current_character = result.current_char;
-	current_index = result.current_index;
-	while(current_index < 9){
-		State result = getToken(letters, digits, current_ch, current_character, current_index);
-		for(int i = 0; i < 1; i ++){
-			//printf("%c", result.lexical[i]);
-		}
-		printf("\n");
-		current_character = result.current_char;
-		current_index = result.current_index;
-	}
 	fclose(file);
 	return 0;
 }
