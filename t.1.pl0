@@ -5,7 +5,7 @@ CONST
     max = 50,
     step = 7;
 VAR
-    counter;
+    counter1213324242;
 BEGIN
     ! min;
     ! max;

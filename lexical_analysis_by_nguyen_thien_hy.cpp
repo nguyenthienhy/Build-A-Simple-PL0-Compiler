@@ -3,10 +3,14 @@
 #include<string.h>
 #include<cstring>
 #include<ctype.h>
-#define MAX_IDENT_LEN 100
+
+#define MAX_IDENT_LEN 10
 #define MAX_CHARACTER_IN_TOKEN 100
 #define MAX_LINES 1000
 #define MAX_CHARACTER_IN_LINE 256
+
+char letters[52] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'u', 's', 't', 'v', 'r', 'x', 'w', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'U', 'S', 'T', 'V', 'R', 'X', 'W', 'Y', 'Z'};
+char digits[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 typedef enum { //Cac loai token su dung trong PL/0
 	NONE=0, IDENT, NUMBER,
@@ -15,15 +19,15 @@ typedef enum { //Cac loai token su dung trong PL/0
 	PLUS, MINUS, TIMES, SLASH, EQU, NEQ, LSS, LEQ, GTR, GEQ, LPARENT, RPARENT, LBRACK, RBRACK, PERIOD, COMMA, SEMICOLON,  ASSIGN, PERCENT, COMMENT
 } TokenType;
 
-struct State{
-	TokenType nameToken;
-	char* lexical;
-	char current_char;
-	int current_index;
-	int number_character;
+struct State{ // trang thai sau khi doc xong 1 token
+	TokenType nameToken; // ten token
+	char* lexical; // chuoi mo ta token
+	char current_char; // ky tu hien tai dang chuan bi duoc xet
+	int current_index; // vi tri hien tai
+	int number_character; // so luong ky tu cua token
 };
 
-State create_state(TokenType nameToken, char* lexical, char current_char, char current_index, int number_character){
+State create_state(TokenType nameToken, char* lexical, char current_char, char current_index, int number_character){ // tao doi tuong trang thai sau khi doc xong 1 token
 	State state;
 	state.nameToken = IDENT;
 	state.lexical = lexical;
@@ -33,10 +37,7 @@ State create_state(TokenType nameToken, char* lexical, char current_char, char c
 	return state;
 }
 
-char letters[52] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'u', 's', 't', 'v', 'r', 'x', 'w', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'U', 'S', 'T', 'V', 'R', 'X', 'W', 'Y', 'Z'};
-char digits[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-
-char* convert_to_upper_case(char* str){
+char* convert_to_upper_case(char* str){ // chuyen ve dang chu hoa
 	int j = 0;
 	int len = strlen(str);
 	char str_up[len]; 
@@ -47,7 +48,7 @@ char* convert_to_upper_case(char* str){
     return str_up;
 }
 
-int strcmp_config(char* str1, char* str2){
+int strcmp_config(char* str1, char* str2){// so sanh 2 xau
 	int count = 0;
 	for(int i = 0 ; i < strlen(str2); i ++){
 		if(str2[i] == str1[i]){
@@ -60,7 +61,7 @@ int strcmp_config(char* str1, char* str2){
 	return 1;
 }
 
-int isKeyword(char* str){
+int isKeyword(char* str){ // kiem tra ten bien co phai la IDENT hay khong
 	char* upper_str = convert_to_upper_case(str);
 	if(strcmp_config(upper_str, "BEGIN") == 0){
 		return 1;
@@ -112,7 +113,7 @@ int isKeyword(char* str){
 	}
 }
 
-TokenType getKeyword(char* str){
+TokenType getKeyword(char* str){ // lay ra keyword nhan dang duoc
 	char* upper_str = convert_to_upper_case(str);
 	if(strcmp_config(upper_str, "BEGIN") == 0){
 		return BEGIN;
@@ -162,7 +163,7 @@ TokenType getKeyword(char* str){
 	return NONE;
 }
 
-int isLetter(char* letters, char ch){
+int isLetter(char* letters, char ch){ // kiem tra xem mot ky tu co phai la chu cai hay khong
 	char ch_tmp = toupper(ch);
 	for(int i = 0; i < 52; i ++){
 		char letter_tmp = toupper(letters[i]);
@@ -173,7 +174,7 @@ int isLetter(char* letters, char ch){
 	return 0;
 }
 
-int isDigit(char* digits, char ch){
+int isDigit(char* digits, char ch){ // kiem tra xem mot ky tu co phai la chu so hay khong
 	for(int i = 0; i < 10; i ++){
 		if(ch == digits[i]){
 			return 1;
@@ -182,11 +183,11 @@ int isDigit(char* digits, char ch){
 	return 0;
 }
 
-char getCh(char* str, int index){
+char getCh(char* str, int index){ // lay ra mot ky tu trong chuoi tai vi tri index
 	return str[index];
 }
 
-State getToken(char* letters, char* digits, char* str, char ch, int current_index){
+State getToken(char* letters, char* digits, char* str, char ch, int current_index){ // lay ra tat ca cac token trong mot file code
 	char lexical_array[MAX_CHARACTER_IN_TOKEN];
 	int index = 0;
 	int length_lexical = 0;
@@ -273,10 +274,17 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			printf("\n");
 			return create_state(getKeyword(lexical_fix), lexical_array, ch, current_index, length_lexical);
 		}
-		else if(isKeyword(lexical_fix) == 0){
+		else if(isKeyword(lexical_fix) == 0){// bo sung nhan dang ten qua 10 ky tu
 			printf("IDENT(");
-			for(int i = 0; i < length_lexical; i ++){
-				printf("%c", lexical_fix[i]);
+			if(length_lexical > MAX_IDENT_LEN){
+				for(int i = 0; i < 10; i ++){
+					printf("%c", lexical_fix[i]);
+				}	
+			}
+			else{
+				for(int i = 0; i < length_lexical; i ++){
+					printf("%c", lexical_fix[i]);
+				}
 			}
 			printf(")");
 			printf("\n");
@@ -592,8 +600,13 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 }
 
 int main(int argc, char* argv[]){
+	// fix so lon, ten qua dai, input sai
     char line[MAX_CHARACTER_IN_LINE];
-    FILE* file = fopen("t.1.pl0", "r");
+    char filename[256];
+    printf("Nhap vao file test: ");
+    gets(filename);
+    FILE* file = fopen(filename, "r");
+    printf("\n");
     while (fgets(line, sizeof(line), file)) {
         int len = strlen(line); // do dai cua dong trong file
         State result = getToken(letters, digits, line, line[0], 0);
