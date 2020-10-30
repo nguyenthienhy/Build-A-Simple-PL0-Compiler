@@ -3,210 +3,28 @@
 #include<string.h>
 #include<cstring>
 #include<ctype.h>
-
-#define MAX_IDENT_LEN 10
-#define MAX_CHARACTER_IN_TOKEN 100
-#define MAX_LINES 1000
-#define MAX_CHARACTER_IN_LINE 256
-
-char letters[52] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'u', 's', 't', 'v', 'r', 'x', 'w', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'U', 'S', 'T', 'V', 'R', 'X', 'W', 'Y', 'Z'};
-char digits[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-
-typedef enum { //Cac loai token su dung trong PL/0
-	NONE=0, IDENT, NUMBER,
-	BEGIN, CALL, CONST, DO,  ELSE, END, FOR, IF, ODD,
-	PROCEDURE, PROGRAM, THEN, TO, VAR, WHILE,
-	PLUS, MINUS, TIMES, SLASH, EQU, NEQ, LSS, LEQ, GTR, GEQ, LPARENT, RPARENT, LBRACK, RBRACK, PERIOD, COMMA, SEMICOLON,  ASSIGN, PERCENT, COMMENT
-} TokenType;
-
-struct State{ // trang thai sau khi doc xong 1 token
-	TokenType nameToken; // ten token
-	char* lexical; // chuoi mo ta token
-	char current_char; // ky tu hien tai dang chuan bi duoc xet
-	int current_index; // vi tri hien tai
-	int number_character; // so luong ky tu cua token
-};
-
-State create_state(TokenType nameToken, char* lexical, char current_char, char current_index, int number_character){ // tao doi tuong trang thai sau khi doc xong 1 token
-	State state;
-	state.nameToken = IDENT;
-	state.lexical = lexical;
-	state.current_char = current_char;
-	state.current_index = current_index;
-	state.number_character = number_character;
-	return state;
-}
-
-char* convert_to_upper_case(char* str){ // chuyen ve dang chu hoa
-	int j = 0;
-	int len = strlen(str);
-	char str_up[len]; 
-    while(str[j]){ 
-        str_up[j] = toupper(str[j]); 
-        j++; 
-    }
-    return str_up;
-}
-
-int strcmp_config(char* str1, char* str2){// so sanh 2 xau
-	int count = 0;
-	for(int i = 0 ; i < strlen(str2); i ++){
-		if(str2[i] == str1[i]){
-			count += 1;
-		}
-	}
-	if(count == strlen(str2)){
-		return 0;
-	}
-	return 1;
-}
-
-int isKeyword(char* str){ // kiem tra ten bien co phai la IDENT hay khong
-	char* upper_str = convert_to_upper_case(str);
-	if(strcmp_config(upper_str, "BEGIN") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "CALL") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "CONST") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "DO") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "ELSE") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "FOR") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "IF") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "ODD") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "PROCEDURE") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "PROGRAM") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "THEN") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "TO") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "VAR") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "WHILE") == 0){
-		return 1;
-	}
-	else if(strcmp_config(upper_str, "END") == 0){
-		return 1;
-	}
-	else{
-		return 0;	
-	}
-}
-
-TokenType getKeyword(char* str){ // lay ra keyword nhan dang duoc
-	char* upper_str = convert_to_upper_case(str);
-	if(strcmp_config(upper_str, "BEGIN") == 0){
-		return BEGIN;
-	}
-	else if(strcmp_config(upper_str, "CALL") == 0){
-		return CALL;
-	}
-	else if(strcmp_config(upper_str, "CONST") == 0){
-		return CONST;
-	}
-	else if(strcmp_config(upper_str, "DO") == 0){
-		return DO;
-	}
-	else if(strcmp_config(upper_str, "ELSE") == 0){
-		return ELSE;
-	}
-	else if(strcmp_config(upper_str, "FOR") == 0){
-		return FOR;
-	}
-	else if(strcmp_config(upper_str, "IF") == 0){
-		return IF;
-	}
-	else if(strcmp_config(upper_str, "ODD") == 0){
-		return ODD;
-	}
-	else if(strcmp_config(upper_str, "PROCEDURE") == 0){
-		return PROCEDURE;
-	}
-	else if(strcmp_config(upper_str, "PROGRAM") == 0){
-		return PROGRAM;
-	}
-	else if(strcmp_config(upper_str, "THEN") == 0){
-		return THEN;
-	}
-	else if(strcmp_config(upper_str, "TO") == 0){
-		return TO;
-	}
-	else if(strcmp_config(upper_str, "VAR") == 0){
-		return VAR;
-	}
-	else if(strcmp_config(upper_str, "WHILE") == 0){
-		return WHILE;
-	}
-	else if(strcmp_config(upper_str, "END") == 0){
-		return END;
-	}
-	return NONE;
-}
-
-int isLetter(char* letters, char ch){ // kiem tra xem mot ky tu co phai la chu cai hay khong
-	char ch_tmp = toupper(ch);
-	for(int i = 0; i < 52; i ++){
-		char letter_tmp = toupper(letters[i]);
-		if(ch_tmp == letter_tmp){
-			return 1;
-		}
-	}
-	return 0;
-}
-
-int isDigit(char* digits, char ch){ // kiem tra xem mot ky tu co phai la chu so hay khong
-	for(int i = 0; i < 10; i ++){
-		if(ch == digits[i]){
-			return 1;
-		}
-	}
-	return 0;
-}
-
-char getCh(char* str, int index){ // lay ra mot ky tu trong chuoi tai vi tri index
-	return str[index];
-}
+#include "lexical_analysis.h"
 
 State getToken(char* letters, char* digits, char* str, char ch, int current_index){ // lay ra tat ca cac token trong mot file code
-	char lexical_array[MAX_CHARACTER_IN_TOKEN];
-	int index = 0;
-	int length_lexical = 0;
+	char lexical_array[MAX_CHARACTER_IN_TOKEN]; // mang cac ky tu cho mot token trong 1 dong code
+	int index = 0; // khoi tao chi so ban dau cho mang cac ky tu trong 1 token
+	int length_lexical = 0; // do dai của 1 token
 	if(ch == ' '){
-		while(ch == ' '){
+		while(ch == ' '){ // khi gap ky tu SPACE thi bo qua, doc sang ky tu tiep theo
 			length_lexical += 1;
 			lexical_array[index] = ch;
 			index += 1;
 			ch = getCh(str, current_index + 1);
 			current_index = current_index + 1;
 		}
-		char lexical_fix[length_lexical];
+		char lexical_fix[length_lexical]; // tao 1 mang ky tu co so phan tu bang do dai cua token
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
 		return create_state(NONE, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '\t'){
-		while(ch == '\t'){
+		while(ch == '\t'){ // khi gap ky tu TAB xu ly tuong tu nhu ky tu SPACE
 			length_lexical += 1;
 			lexical_array[index] = ch;
 			index += 1;
@@ -219,7 +37,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		}
 		return create_state(NONE, lexical_fix, ch, current_index, length_lexical);
 	}
-	else if(ch == '\n'){
+	else if(ch == '\n'){ // khi gap ky tu xuong dong(ENTER) xu ly tuong tu nhu ky tu SPACE
 		while(ch == '\n'){
 			length_lexical += 1;
 			lexical_array[index] = ch;
@@ -255,8 +73,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		}
 		return create_state(NONE, lexical_fix, ch, current_index, length_lexical);
 	}
-	else if(isLetter(letters, ch) == 1){
-		while(isLetter(letters, ch) == 1 || isDigit(digits, ch) == 1){
+	else if(isLetter(letters, ch) == 1){ // khi gap ky tu la chu cai
+		while(isLetter(letters, ch) == 1 || isDigit(digits, ch) == 1){ // ten bien co the co chu so
 			length_lexical += 1;
 			lexical_array[index] = ch;
 			index += 1;
@@ -267,28 +85,30 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		if(isKeyword(lexical_fix) == 1){
+		if(isKeyword(lexical_fix) == 1){ // neu chuoi ky tu nhan duoc la KEYWORD
+			char lexical_fix_two[length_lexical];
 			for(int i = 0; i < length_lexical; i ++){
-				printf("%c", toupper(lexical_fix[i]));
+				lexical_fix_two[i] = toupper(lexical_array[i]);
 			}
-			printf("\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state(lexical_fix_two, length_lexical, index_add - 1); // them phan tu nay vao MANG TOKEN
 			return create_state(getKeyword(lexical_fix), lexical_array, ch, current_index, length_lexical);
 		}
 		else if(isKeyword(lexical_fix) == 0){// bo sung nhan dang ten qua 10 ky tu
-			printf("IDENT(");
-			if(length_lexical > MAX_IDENT_LEN){
+			if(length_lexical > MAX_IDENT_LEN){ // neu qua 10 ky tu
+                char lexical_fix_two[10];
 				for(int i = 0; i < 10; i ++){
-					printf("%c", lexical_fix[i]);
-				}	
+                    lexical_fix_two[i] = lexical_fix[i];
+				}
+                int index_add = count_token_in_token_array();
+			    TokenArray[index_add - 1] = create_token_state(lexical_fix_two, 10, index_add - 1);
+			    return create_state(IDENT, lexical_fix_two, ch, current_index, 10);	
 			}
 			else{
-				for(int i = 0; i < length_lexical; i ++){
-					printf("%c", lexical_fix[i]);
-				}
+                int index_add = count_token_in_token_array();
+			    TokenArray[index_add - 1] = create_token_state(lexical_fix, length_lexical, index_add - 1);
+			    return create_state(IDENT, lexical_fix, ch, current_index, length_lexical);
 			}
-			printf(")");
-			printf("\n");
-			return create_state(IDENT, lexical_fix, ch, current_index, length_lexical);
 		}
 	}
 	else if(isDigit(digits, ch) == 1){
@@ -303,8 +123,21 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("NUMBER\n");
-		return create_state(NUMBER, lexical_fix, ch, current_index, length_lexical);
+		if (length_lexical > 6){
+			char lexical_fix_two[6];
+			for(int i = 0; i < 6; i ++){
+				lexical_fix_two[i] = lexical_fix[i];
+			}
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("NUMBER", 6, index_add - 1);
+			return create_state(NUMBER, lexical_fix_two, ch, current_index, length_lexical);
+		}
+		else{
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("NUMBER", 6, index_add - 1);
+			return create_state(NUMBER, lexical_fix, ch, current_index, length_lexical);
+		}
+		
 	}
 	else if(ch == '+'){
 		length_lexical = 1;
@@ -315,7 +148,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("PLUS\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("PLUS", 4, index_add - 1);
 		return create_state(PLUS, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '*'){
@@ -332,7 +166,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			for(int i = 0; i < length_lexical; i ++){
 				lexical_fix[i] = lexical_array[i];
 			}
-			printf("COMMENT\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("COMMENT", 7, index_add - 1);
 			return create_state(COMMENT, lexical_fix, ch, current_index, length_lexical);
 		}
 		else{
@@ -340,7 +175,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			for(int i = 0; i < length_lexical; i ++){
 				lexical_fix[i] = lexical_array[i];
 			}
-			printf("TIMES\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("TIMES", 5, index_add - 1);
 			return create_state(TIMES, lexical_fix, ch, current_index, length_lexical);
 		}
 	}
@@ -359,7 +195,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			for(int i = 0; i < length_lexical; i ++){
 				lexical_fix[i] = lexical_array[i];
 			}
-			printf("GEQ\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("GEQ", 3, index_add - 1);
 			return create_state(GEQ, lexical_fix, ch, current_index, length_lexical);
 		}
 		else{
@@ -367,7 +204,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			for(int i = 0; i < length_lexical; i ++){
 				lexical_fix[i] = lexical_array[i];
 			}
-            printf("GTR\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("GTR", 3, index_add - 1);
 			return create_state(GTR, lexical_fix, ch, current_index, length_lexical);
 		}
 	}
@@ -386,7 +224,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			for(int i = 0; i < length_lexical; i ++){
 				lexical_fix[i] = lexical_array[i];
 			}
-			printf("LEQ\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("LEQ", 3, index_add - 1);
 			return create_state(LEQ, lexical_fix, ch, current_index, length_lexical);
 		}
 		else if(ch == '>'){
@@ -398,7 +237,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			for(int i = 0; i < length_lexical; i ++){
 				lexical_fix[i] = lexical_array[i];
 			}
-			printf("NEQ\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("NEQ", 3, index_add - 1);
 			return create_state(NEQ, lexical_fix, ch, current_index, length_lexical);
 		}
 		else{
@@ -406,7 +246,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			for(int i = 0; i < length_lexical; i ++){
 				lexical_fix[i] = lexical_array[i];
 			}
-            printf("LSS\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("LSS", 3, index_add - 1);
 			return create_state(LSS, lexical_fix, ch, current_index, length_lexical);
 		}
 	}
@@ -419,7 +260,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("EQU\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("EQU", 3, index_add - 1);
 		return create_state(EQU, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '('){
@@ -436,7 +278,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			for(int i = 0; i < length_lexical; i ++){
 				lexical_fix[i] = lexical_array[i];
 			}
-			printf("COMMENT\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("COMMENT", 7, index_add - 1);
 			return create_state(COMMENT, lexical_fix, ch, current_index, length_lexical);
 		}
 		else{
@@ -444,7 +287,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			for(int i = 0; i < length_lexical; i ++){
 				lexical_fix[i] = lexical_array[i];
 			}
-			printf("LPARENT\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("LPARENT", 7, index_add - 1);
 			return create_state(LPARENT, lexical_fix, ch, current_index, length_lexical);
 		}
 	}
@@ -457,7 +301,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("LBRACK\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("LBRACK", 6, index_add - 1);
 		return create_state(LBRACK, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == ':'){
@@ -475,7 +320,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			for(int i = 0; i < length_lexical; i ++){
 				lexical_fix[i] = lexical_array[i];
 			}
-			printf("ASSIGN\n");
+			int index_add = count_token_in_token_array();
+			TokenArray[index_add - 1] = create_token_state("ASSIGN", 6, index_add - 1);
 			return create_state(ASSIGN, lexical_fix, ch, current_index, length_lexical);
 		}
 		else{
@@ -499,7 +345,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("COMMA\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("COMMA", 5, index_add - 1);
 		return create_state(COMMA, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '%'){
@@ -511,7 +358,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("PERCENT\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("PERCENT", 7, index_add - 1);
 		return create_state(PERCENT, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '-'){
@@ -523,7 +371,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("MINUS\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("MINUS", 5, index_add - 1);
 		return create_state(MINUS, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '/'){
@@ -535,7 +384,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("SLASH\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("SLASH", 5, index_add - 1);
 		return create_state(SLASH, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == ')'){
@@ -547,7 +397,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("RPARENT\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("RPARENT", 7, index_add - 1);
 		return create_state(RPARENT, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == ']'){
@@ -559,7 +410,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("RBRACK\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("RBRACK", 6, index_add - 1);
 		return create_state(RBRACK, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == ';'){
@@ -571,7 +423,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("SEMICOLON\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("SEMICOLON", 9, index_add - 1);
 		return create_state(SEMICOLON, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '.'){
@@ -583,7 +436,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		for(int i = 0; i < length_lexical; i ++){
 			lexical_fix[i] = lexical_array[i];
 		}
-		printf("PERIOD\n");
+		int index_add = count_token_in_token_array();
+		TokenArray[index_add - 1] = create_token_state("PREIOD", 6, index_add - 1);
 		return create_state(PERIOD, lexical_fix, ch, current_index, length_lexical);
 	}
 	else{
@@ -599,14 +453,11 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 	}
 }
 
-int main(int argc, char* argv[]){
+void compile(char* filename){
 	// fix so lon, ten qua dai, input sai
     char line[MAX_CHARACTER_IN_LINE];
-    char filename[256];
-    printf("Nhap vao file test: ");
-    gets(filename);
     FILE* file = fopen(filename, "r");
-    printf("\n");
+	initial_TokenArray(TokenArray);
     while (fgets(line, sizeof(line), file)) {
         int len = strlen(line); // do dai cua dong trong file
         State result = getToken(letters, digits, line, line[0], 0);
@@ -618,6 +469,19 @@ int main(int argc, char* argv[]){
             current_index = result_tmp.current_index;
         }
     }
+	int count_token = count_token_in_token_array() - 1; // khong thuc hien dem nua nen phai tru di 1
+	for(int i = 0 ; i < count_token; i ++){
+		for(int j = 0; j < TokenArray[i].lexical_length; j ++){
+			printf("%c", TokenArray[i].lexical[j]);
+		}
+		printf("\n");
+	}
 	fclose(file);
-	return 0;
+}
+
+int	main(int argc, char * argv[]){
+	if(argc == 1) compile("data/t.1.pl0");
+    else if(argc == 2)  compile(argv[1]); 
+	else  printf("Syntax error \n");
+ 	return 0;
 }
