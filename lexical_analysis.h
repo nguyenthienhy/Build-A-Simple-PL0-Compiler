@@ -27,61 +27,59 @@ int strcmp_config(char* str1, char* str2){ // so sanh 2 xau
 }
 
 char* convert_to_upper_case(char* str){ // chuyen ve dang chu hoa
-	int j = 0;
-	int len = strlen(str);
-	char str_up[len]; 
+	int j = 0; 
     while(str[j]){ 
-        str_up[j] = toupper(str[j]); 
+        str[j] = toupper(str[j]); 
         j++; 
     }
-    return str_up;
+    return str;
 }
 
 int isKeyword(char* str){ // kiem tra ten bien co phai la KEYWORD hay khong
 	char* upper_str = convert_to_upper_case(str);
-	if(strcmp_config(upper_str, "BEGIN") == 0){
+	if(strcmp_config(upper_str, (char*)"BEGIN") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "CALL") == 0){
+	else if(strcmp_config(upper_str, (char*)"CALL") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "CONST") == 0){
+	else if(strcmp_config(upper_str, (char*)"CONST") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "DO") == 0){
+	else if(strcmp_config(upper_str, (char*)"DO") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "ELSE") == 0){
+	else if(strcmp_config(upper_str, (char*)"ELSE") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "FOR") == 0){
+	else if(strcmp_config(upper_str, (char*)"FOR") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "IF") == 0){
+	else if(strcmp_config(upper_str, (char*)"IF") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "ODD") == 0){
+	else if(strcmp_config(upper_str, (char*)"ODD") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "PROCEDURE") == 0){
+	else if(strcmp_config(upper_str, (char*)"PROCEDURE") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "PROGRAM") == 0){
+	else if(strcmp_config(upper_str, (char*)"PROGRAM") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "THEN") == 0){
+	else if(strcmp_config(upper_str, (char*)"THEN") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "TO") == 0){
+	else if(strcmp_config(upper_str, (char*)"TO") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "VAR") == 0){
+	else if(strcmp_config(upper_str, (char*)"VAR") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "WHILE") == 0){
+	else if(strcmp_config(upper_str, (char*)"WHILE") == 0){
 		return 1;
 	}
-	else if(strcmp_config(upper_str, "END") == 0){
+	else if(strcmp_config(upper_str, (char*)"END") == 0){
 		return 1;
 	}
 	else{
@@ -117,7 +115,10 @@ typedef enum { //Cac loai token su dung trong PL/0
 	NONE=0, IDENT, NUMBER,
 	BEGIN, CALL, CONST, DO,  ELSE, END, FOR, IF, ODD,
 	PROCEDURE, PROGRAM, THEN, TO, VAR, WHILE,
-	PLUS, MINUS, TIMES, SLASH, EQU, NEQ, LSS, LEQ, GTR, GEQ, LPARENT, RPARENT, LBRACK, RBRACK, PERIOD, COMMA, SEMICOLON,  ASSIGN, PERCENT, COMMENT
+	PLUS, MINUS, TIMES, SLASH, EQU, NEQ, LSS, 
+	LEQ, GTR, GEQ, LPARENT, RPARENT, LBRACK, 
+	RBRACK, PERIOD, COMMA, SEMICOLON,  ASSIGN, 
+	PERCENT, COMMENT_O, COMMENT_C
 } TokenType;
 
 struct State{ // trang thai sau khi doc xong 1 token
@@ -138,49 +139,49 @@ TokenState TokenArray[MAX_LINES]; // mang token trong code
 
 TokenType getKeyword(char* str){ // lay ra keyword nhan dang duoc
 	char* upper_str = convert_to_upper_case(str);
-	if(strcmp_config(upper_str, "BEGIN") == 0){
+	if(strcmp_config(upper_str, (char*)"BEGIN") == 0){
 		return BEGIN;
 	}
-	else if(strcmp_config(upper_str, "CALL") == 0){
+	else if(strcmp_config(upper_str, (char*)"CALL") == 0){
 		return CALL;
 	}
-	else if(strcmp_config(upper_str, "CONST") == 0){
+	else if(strcmp_config(upper_str, (char*)"CONST") == 0){
 		return CONST;
 	}
-	else if(strcmp_config(upper_str, "DO") == 0){
+	else if(strcmp_config(upper_str, (char*)"DO") == 0){
 		return DO;
 	}
-	else if(strcmp_config(upper_str, "ELSE") == 0){
+	else if(strcmp_config(upper_str, (char*)"ELSE") == 0){
 		return ELSE;
 	}
-	else if(strcmp_config(upper_str, "FOR") == 0){
+	else if(strcmp_config(upper_str, (char*)"FOR") == 0){
 		return FOR;
 	}
-	else if(strcmp_config(upper_str, "IF") == 0){
+	else if(strcmp_config(upper_str, (char*)"IF") == 0){
 		return IF;
 	}
-	else if(strcmp_config(upper_str, "ODD") == 0){
+	else if(strcmp_config(upper_str, (char*)"ODD") == 0){
 		return ODD;
 	}
-	else if(strcmp_config(upper_str, "PROCEDURE") == 0){
+	else if(strcmp_config(upper_str, (char*)"PROCEDURE") == 0){
 		return PROCEDURE;
 	}
-	else if(strcmp_config(upper_str, "PROGRAM") == 0){
+	else if(strcmp_config(upper_str, (char*)"PROGRAM") == 0){
 		return PROGRAM;
 	}
-	else if(strcmp_config(upper_str, "THEN") == 0){
+	else if(strcmp_config(upper_str, (char*)"THEN") == 0){
 		return THEN;
 	}
-	else if(strcmp_config(upper_str, "TO") == 0){
+	else if(strcmp_config(upper_str, (char*)"TO") == 0){
 		return TO;
 	}
-	else if(strcmp_config(upper_str, "VAR") == 0){
+	else if(strcmp_config(upper_str, (char*)"VAR") == 0){
 		return VAR;
 	}
-	else if(strcmp_config(upper_str, "WHILE") == 0){
+	else if(strcmp_config(upper_str, (char*)"WHILE") == 0){
 		return WHILE;
 	}
-	else if(strcmp_config(upper_str, "END") == 0){
+	else if(strcmp_config(upper_str, (char*)"END") == 0){
 		return END;
 	}
 	return NONE;
@@ -198,7 +199,7 @@ TokenState create_token_state(char* lexical, int lexical_length, int index){ // 
 
 void initial_TokenArray(TokenState* TokenArray){ // khoi tao cac doi tuong trong mang token ve dang mac dinh
 	for(int i = 0 ; i < MAX_LINES; i ++){
-		TokenArray[i] = create_token_state("NULL", MAX_IDENT_LEN, i);
+		TokenArray[i] = create_token_state((char*)"NULL", MAX_IDENT_LEN, i);
 	}
 }
 
@@ -206,10 +207,11 @@ int count_token_in_token_array(){ // dem so phan tu hien co trong mang token (so
 	int count = 0;
 	for(int i = 0; i < MAX_LINES; i ++){
 		count += 1;
-		if (strcmp_config(TokenArray[i].lexical, "NULL") == 0){
+		if (strcmp_config(TokenArray[i].lexical, (char*)"NULL") == 0){
 			return count;
 		}
 	}
+	return 0;
 }
 
 State create_state(TokenType nameToken, char* lexical, char current_char, char current_index, int number_character){ // tao doi tuong trang thai sau khi doc xong 1 token
@@ -222,4 +224,21 @@ State create_state(TokenType nameToken, char* lexical, char current_char, char c
 	state.current_index = current_index;
 	state.number_character = number_character;
 	return state;
+}
+
+void remove_comment(TokenState* token_array, int number_token){ // loai bo comment trong code
+	for(int i = 0; i < number_token; i ++){
+		if(strcmp_config(token_array[i].lexical, (char*)"COMMENT_O") == 0){ // neu gap ky tu khoi tao comment
+			int index_comment_start = i;
+			int index_comment_last = -1;
+			for(int j = i + 1; j < number_token - 1; j ++){
+				if(strcmp_config(token_array[j].lexical, (char*)"COMMENT_C") == 0){ // neu gap ky tu ket thuc comment
+					index_comment_last = j;
+				}
+			}
+			for(int index = index_comment_start; index <= index_comment_last; index ++){
+				token_array[index] = create_token_state((char*)"COMMENT", 7, index);
+			}
+		}
+	}
 }

@@ -1,11 +1,12 @@
 { Output: 3 6 }
 
+(*
 PROCEDURE Outer;
 VAR i;
-
+(*
     PROCEDURE Middle;
     VAR j;
-
+    	(*
         PROCEDURE Inner;
         VAR k;
         BEGIN
@@ -17,12 +18,13 @@ VAR i;
         j := 2;
         ! i + j;
         CALL Inner
+        *)
     END; { Middle }
-
+*)
 BEGIN { Outer }
     i := 1;
     CALL Middle
 END; { Outer }
-
+*)
 CALL Outer
 .

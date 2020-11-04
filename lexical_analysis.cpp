@@ -129,12 +129,12 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix_two[i] = lexical_fix[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("NUMBER", 6, index_add - 1);
+			TokenArray[index_add - 1] = create_token_state((char*)"NUMBER", 6, index_add - 1);
 			return create_state(NUMBER, lexical_fix_two, ch, current_index, length_lexical);
 		}
 		else{
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("NUMBER", 6, index_add - 1);
+			TokenArray[index_add - 1] = create_token_state((char*)"NUMBER", 6, index_add - 1);
 			return create_state(NUMBER, lexical_fix, ch, current_index, length_lexical);
 		}
 		
@@ -149,7 +149,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("PLUS", 4, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"PLUS", 4, index_add - 1);
 		return create_state(PLUS, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '*'){
@@ -167,8 +167,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix[i] = lexical_array[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("COMMENT", 7, index_add - 1);
-			return create_state(COMMENT, lexical_fix, ch, current_index, length_lexical);
+			TokenArray[index_add - 1] = create_token_state((char*)"COMMENT_C", 9, index_add - 1);
+			return create_state(COMMENT_C, lexical_fix, ch, current_index, length_lexical);
 		}
 		else{
 			char lexical_fix[length_lexical];
@@ -176,7 +176,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix[i] = lexical_array[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("TIMES", 5, index_add - 1);
+			TokenArray[index_add - 1] = create_token_state((char*)"TIMES", 5, index_add - 1);
 			return create_state(TIMES, lexical_fix, ch, current_index, length_lexical);
 		}
 	}
@@ -196,7 +196,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix[i] = lexical_array[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("GEQ", 3, index_add - 1);
+			TokenArray[index_add - 1] = create_token_state((char*)"GEQ", 3, index_add - 1);
 			return create_state(GEQ, lexical_fix, ch, current_index, length_lexical);
 		}
 		else{
@@ -205,7 +205,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix[i] = lexical_array[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("GTR", 3, index_add - 1);
+			TokenArray[index_add - 1] = create_token_state((char*)"GTR", 3, index_add - 1);
 			return create_state(GTR, lexical_fix, ch, current_index, length_lexical);
 		}
 	}
@@ -225,7 +225,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix[i] = lexical_array[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("LEQ", 3, index_add - 1);
+			TokenArray[index_add - 1] = create_token_state((char*)"LEQ", 3, index_add - 1);
 			return create_state(LEQ, lexical_fix, ch, current_index, length_lexical);
 		}
 		else if(ch == '>'){
@@ -238,7 +238,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix[i] = lexical_array[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("NEQ", 3, index_add - 1);
+			TokenArray[index_add - 1] = create_token_state((char*)"NEQ", 3, index_add - 1);
 			return create_state(NEQ, lexical_fix, ch, current_index, length_lexical);
 		}
 		else{
@@ -247,7 +247,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix[i] = lexical_array[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("LSS", 3, index_add - 1);
+			TokenArray[index_add - 1] = create_token_state((char*)"LSS", 3, index_add - 1);
 			return create_state(LSS, lexical_fix, ch, current_index, length_lexical);
 		}
 	}
@@ -261,7 +261,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("EQU", 3, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"EQU", 3, index_add - 1);
 		return create_state(EQU, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '('){
@@ -279,8 +279,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix[i] = lexical_array[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("COMMENT", 7, index_add - 1);
-			return create_state(COMMENT, lexical_fix, ch, current_index, length_lexical);
+			TokenArray[index_add - 1] = create_token_state((char*)"COMMENT_O", 9, index_add - 1);
+			return create_state(COMMENT_O, lexical_fix, ch, current_index, length_lexical);
 		}
 		else{
 			char lexical_fix[length_lexical];
@@ -288,7 +288,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix[i] = lexical_array[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("LPARENT", 7, index_add - 1);
+			TokenArray[index_add - 1] = create_token_state((char*)"LPARENT", 7, index_add - 1);
 			return create_state(LPARENT, lexical_fix, ch, current_index, length_lexical);
 		}
 	}
@@ -302,7 +302,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("LBRACK", 6, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"LBRACK", 6, index_add - 1);
 		return create_state(LBRACK, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == ':'){
@@ -321,7 +321,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 				lexical_fix[i] = lexical_array[i];
 			}
 			int index_add = count_token_in_token_array();
-			TokenArray[index_add - 1] = create_token_state("ASSIGN", 6, index_add - 1);
+			TokenArray[index_add - 1] = create_token_state((char*)"ASSIGN", 6, index_add - 1);
 			return create_state(ASSIGN, lexical_fix, ch, current_index, length_lexical);
 		}
 		else{
@@ -346,7 +346,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("COMMA", 5, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"COMMA", 5, index_add - 1);
 		return create_state(COMMA, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '%'){
@@ -359,7 +359,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("PERCENT", 7, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"PERCENT", 7, index_add - 1);
 		return create_state(PERCENT, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '-'){
@@ -372,7 +372,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("MINUS", 5, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"MINUS", 5, index_add - 1);
 		return create_state(MINUS, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '/'){
@@ -385,7 +385,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("SLASH", 5, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"SLASH", 5, index_add - 1);
 		return create_state(SLASH, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == ')'){
@@ -398,7 +398,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("RPARENT", 7, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"RPARENT", 7, index_add - 1);
 		return create_state(RPARENT, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == ']'){
@@ -411,7 +411,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("RBRACK", 6, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"RBRACK", 6, index_add - 1);
 		return create_state(RBRACK, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == ';'){
@@ -424,7 +424,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("SEMICOLON", 9, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"SEMICOLON", 9, index_add - 1);
 		return create_state(SEMICOLON, lexical_fix, ch, current_index, length_lexical);
 	}
 	else if(ch == '.'){
@@ -437,7 +437,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		int index_add = count_token_in_token_array();
-		TokenArray[index_add - 1] = create_token_state("PREIOD", 6, index_add - 1);
+		TokenArray[index_add - 1] = create_token_state((char*)"PREIOD", 6, index_add - 1);
 		return create_state(PERIOD, lexical_fix, ch, current_index, length_lexical);
 	}
 	else{
@@ -451,6 +451,8 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		}
 		return create_state(NONE, lexical_fix, ch, current_index, length_lexical);
 	}
+	State state;
+	return state; // NULL
 }
 
 void compile(char* filename){
@@ -470,6 +472,8 @@ void compile(char* filename){
         }
     }
 	int count_token = count_token_in_token_array() - 1; // khong thuc hien dem nua nen phai tru di 1
+	remove_comment(TokenArray, count_token);
+	// phan comment se duoc in ra gia tri COMMENT
 	for(int i = 0 ; i < count_token; i ++){
 		for(int j = 0; j < TokenArray[i].lexical_length; j ++){
 			printf("%c", TokenArray[i].lexical[j]);
@@ -480,8 +484,8 @@ void compile(char* filename){
 }
 
 int	main(int argc, char * argv[]){
-	if(argc == 1) compile("data/t.1.pl0");
-    else if(argc == 2)  compile(argv[1]); 
-	else  printf("Syntax error \n");
+	if(argc == 1) compile((char*)"data/t.3.pl0");
+    else if(argc == 2) compile((char*)argv[1]); 
+	else printf("Syntax error \n");
  	return 0;
 }
