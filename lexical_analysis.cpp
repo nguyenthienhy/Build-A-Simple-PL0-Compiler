@@ -473,8 +473,11 @@ void compile(char* filename){
     }
 	int count_token = count_token_in_token_array() - 1; // khong thuc hien dem nua nen phai tru di 1
 	remove_comment(TokenArray, count_token);
-	// phan comment se duoc in ra gia tri COMMENT
+	// phan comment se khong duoc in ra
 	for(int i = 0 ; i < count_token; i ++){
+		if(strcmp_config(TokenArray[i].lexical, (char*)"COMMENT") == 0){
+			continue;
+		}
 		for(int j = 0; j < TokenArray[i].lexical_length; j ++){
 			printf("%c", TokenArray[i].lexical[j]);
 		}
