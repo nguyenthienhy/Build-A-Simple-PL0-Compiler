@@ -7,7 +7,7 @@
 #define MAX_IDENT_LEN 10 // do dai toi da cua ten bien
 #define MAX_CHARACTER_IN_TOKEN 10 // do dai toi da tren mot token
 #define MAX_LINES 1000 // so dong toi da trong 1 file code
-#define MAX_CHARACTER_IN_LINE 256 // so ky tu toi da tren 1 dong
+#define MAX_CHARACTER_IN_LINE 5000 // so ky tu toi da tren 1 dong
 
 
 char letters[52] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'u', 's', 't', 'v', 'r', 'x', 'w', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'U', 'S', 'T', 'V', 'R', 'X', 'W', 'Y', 'Z'};
@@ -214,7 +214,7 @@ int count_token_in_token_array(){ // dem so phan tu hien co trong mang token (so
 	return 0;
 }
 
-State create_state(TokenType nameToken, char* lexical, char current_char, char current_index, int number_character){ // tao doi tuong trang thai sau khi doc xong 1 token
+State create_state(TokenType nameToken, char* lexical, char current_char, int current_index, int number_character){ // tao doi tuong trang thai sau khi doc xong 1 token
 	State state;
 	state.nameToken = nameToken;
     for(int i = 0 ; i < number_character; i ++){

@@ -2,7 +2,7 @@
 
 (*
 PROCEDURE Outer;
-VAR i;
+VAR i = 123456;
 (*
     PROCEDURE Middle;
     VAR j;

@@ -5,7 +5,14 @@
 #include<ctype.h>
 #include "lexical_analysis.h"
 
-State getToken(char* letters, char* digits, char* str, char ch, int current_index){ // lay ra tat ca cac token trong mot file code
+State getToken(char* letters, char* digits, char* str, char ch, int current_index, int &error){ // lay ra tat ca cac token trong mot file code
+	/*
+		letters : bộ chữ
+		digits: bộ số
+		str: chuỗi trên dòng hiện tại
+		ch: ký tự đang xét
+		current_index: vị trí của ký tự đang xét
+	*/
 	char lexical_array[MAX_CHARACTER_IN_TOKEN]; // mang cac ky tu cho mot token trong 1 dong code
 	int index = 0; // khoi tao chi so ban dau cho mang cac ky tu trong 1 token
 	int length_lexical = 0; // do dai của 1 token
@@ -124,6 +131,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 			lexical_fix[i] = lexical_array[i];
 		}
 		if (length_lexical > 6){
+			error = 1;
 			char lexical_fix_two[6];
 			for(int i = 0; i < 6; i ++){
 				lexical_fix_two[i] = lexical_fix[i];
@@ -455,40 +463,49 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 	return state; // NULL
 }
 
-void compile(char* filename){
-	// fix so lon, ten qua dai, input sai
-    char line[MAX_CHARACTER_IN_LINE];
-    FILE* file = fopen(filename, "r");
-	initial_TokenArray(TokenArray);
-    while (fgets(line, sizeof(line), file)) {
-        int len = strlen(line); // do dai cua dong trong file
-        State result = getToken(letters, digits, line, line[0], 0);
-        char current_character = result.current_char;
-        int current_index = result.current_index;
-        while(current_index < len){
-            State result_tmp = getToken(letters, digits, line, current_character, current_index);
-            current_character = result_tmp.current_char;
-            current_index = result_tmp.current_index;
-        }
-    }
-	int count_token = count_token_in_token_array() - 1; // khong thuc hien dem nua nen phai tru di 1
-	remove_comment(TokenArray, count_token);
-	// phan comment se khong duoc in ra
-	for(int i = 0 ; i < count_token; i ++){
-		if(strcmp_config(TokenArray[i].lexical, (char*)"COMMENT") == 0){
-			continue;
-		}
-		for(int j = 0; j < TokenArray[i].lexical_length; j ++){
-			printf("%c", TokenArray[i].lexical[j]);
-		}
-		printf("\n");
-	}
-	fclose(file);
-}
+// void compile(char* filename){
+// 	int error = 0;
+// 	// fix so lon, ten qua dai, input sai
+//     char line[MAX_CHARACTER_IN_LINE];
+//     FILE* file = fopen(filename, "r");
+// 	initial_TokenArray(TokenArray);
+//     while (fgets(line, sizeof(line), file)) {
+//         int len = strlen(line); // do dai cua dong trong file
+//         State result = getToken(letters, digits, line, line[0], 0, error);
+// 		if(error == 1){
+// 			break;
+// 		}
+//         char current_character = result.current_char;
+//         int current_index = result.current_index;
+//         while(current_index < len){
+//             State result_tmp = getToken(letters, digits, line, current_character, current_index, error);
+//             current_character = result_tmp.current_char;
+//             current_index = result_tmp.current_index;
+//         }
+//     }
+// 	if(error == 1){
+// 		printf("Loi so qua lon...");
+// 	}
+// 	else{
+// 		int count_token = count_token_in_token_array() - 1; // khong thuc hien dem nua nen phai tru di 1
+// 		remove_comment(TokenArray, count_token);
+// 		// phan comment se khong duoc in ra
+// 		for(int i = 0 ; i < count_token; i ++){
+// 			if(strcmp_config(TokenArray[i].lexical, (char*)"COMMENT") == 0){
+// 				continue;
+// 			}
+// 			for(int j = 0; j < TokenArray[i].lexical_length; j ++){
+// 				printf("%c", TokenArray[i].lexical[j]);
+// 			}
+// 			printf("\n");
+// 		}
+// 	}
+// 	fclose(file);
+// }
 
-int	main(int argc, char * argv[]){
-	if(argc == 1) compile((char*)"data/t.3.pl0");
-    else if(argc == 2) compile((char*)argv[1]); 
-	else printf("Syntax error \n");
- 	return 0;
-}
+// int	main(int argc, char * argv[]){
+// 	if(argc == 1) compile((char*)"data/test.pl0");
+//     else if(argc == 2) compile((char*)argv[1]); 
+// 	else printf("Syntax error \n");
+//  	return 0;
+// }
