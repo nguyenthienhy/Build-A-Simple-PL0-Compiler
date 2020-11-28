@@ -9,9 +9,9 @@ State factor(char*str, char ch, int current_index, int &error);
 State term(char*str, char ch, int current_index, int &error);
 State expression(char*str, char ch, int current_index, int &error);
 State condition(char*str, char ch, int current_index, int &error);
-// State statement(char*str, char ch, int current_index, int &error);
-// State block(char*str, char ch, int current_index, int &error);
-// State program(char*str, char ch, int current_index, int &error);
+State statement(char*str, char ch, int current_index, int &error);
+State block(char*str, char ch, int current_index, int &error);
+State program(char*str, char ch, int current_index, int &error);
 
 TokenType Token;
 
@@ -299,11 +299,26 @@ State statement(char*str, char ch, int current_index, int &error){
     }
 }
 
-void block(char*str, char ch, int current_index, int &error){
+State parameters(char*str, char ch, int current_index, int &error){
     State result;
-    bool flag_const = false;
-    bool flag_var = false;
-    bool flag_procedure = false;
+    if(Token == VAR){
+        result = getToken(letters, digits, str, ch, current_index, error);
+        Token = result.nameToken;
+        if(Token == IDENT){
+            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            Token = result.nameToken;
+        }
+        return result;
+    }
+    else if(Token == IDENT){
+        result = getToken(letters, digits, str, ch, current_index, error);
+        Token = result.nameToken;
+        return result;
+    }
+}
+
+State block(char*str, char ch, int current_index, int &error){
+    State result;
     if(Token == CONST){
         result = getToken(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
@@ -329,28 +344,49 @@ void block(char*str, char ch, int current_index, int &error){
                                     result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                                     Token = result.nameToken;
                                 }
+                                else{
+                                    error = 1;
+                                    printf("Thieu gia tri duoc gan...");
+                                }
                             }
+                            else{
+                                error = 1;
+                                printf("Thieu tu khoa EQU...");
+                            }
+                        }
+                        else{
+                            error = 1;
+                            printf("Thieu ten IDENT...");
                         }
                     }
                     if(Token == SEMICOLON){
                         result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
-                        flag_const = true;
+                        return result;
+                    }
+                    else{
+                        error = 1;
+                        printf("Thieu dau cham phay...");
                     }
                 }
+                else{
+                    error = 1;
+                    printf("Thieu gia tri gan cho CONST...");
+                }
+            }
+            else{
+                error = 1;
+                printf("Thieu tu khoa EQU...");
             }
         }
-    }
-    if(Token == VAR){
-        if(flag_const == false){
-            result = getToken(letters, digits, str, ch, current_index, error);
-            Token = result.nameToken;
-        }
         else{
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
-            Token = result.nameToken;
-            flag_const = false;
+            error = 1;
+            printf("Thieu ten IDENT...");
         }
+    }
+    else if(Token == VAR){
+        result = getToken(letters, digits, str, ch, current_index, error);
+        Token = result.nameToken;
         if(Token == IDENT){
             result = getToken(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
@@ -364,6 +400,14 @@ void block(char*str, char ch, int current_index, int &error){
                         result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
                     }
+                    else{
+                        error = 1;
+                        printf("Thieu dau ngoac vuong...");
+                    }
+                }
+                else{
+                    error = 1;
+                    printf("Thieu chi so cho mang...");
                 }
             }
             while(Token == COMMA){
@@ -382,38 +426,57 @@ void block(char*str, char ch, int current_index, int &error){
                                 result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                                 Token = result.nameToken;
                             }
+                            else{
+                                error = 1;
+                                printf("Thieu dau ngoac vuong...");
+                            }
+                        }
+                        else{
+                            error = 1;
+                            printf("Thieu chi so cho mang...");
                         }
                     }
+                    else{
+                        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                        Token = result.nameToken; 
+                    }
+                }
+                else{
+                    error = 1;
+                    printf("Thieu ten IDENT...");
                 }
             }
             if(Token == SEMICOLON){
                 result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
-                flag_var = true;
+                return result;
+            }
+            else{
+                error = 1;
+                printf("Thieu dau cham phay...");
             }
         }
-    }
-    if(Token == PROCEDURE){
-        if(flag_var == false){
-            result = getToken(letters, digits, str, ch, current_index, error);
-            Token = result.nameToken;
-        }
         else{
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
-            Token = result.nameToken;
-            flag_var = false;
+            error = 1;
+            printf("Thieu ten IDENT...");
         }
+    }
+    else if(Token == PROCEDURE){
+        result = getToken(letters, digits, str, ch, current_index, error);
+        Token = result.nameToken;
         if(Token == IDENT){
             result = getToken(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             if(Token == LPARENT){
                 result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
-                Token = parameters(str, result.current_char, result.current_index, error);
+                result = parameters(str, result.current_char, result.current_index, error);
+                Token = result.nameToken;
                 while(Token == SEMICOLON){
                     result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
-                    Token = parameters(str, result.current_char, result.current_index, error);
+                    result = parameters(str, result.current_char, result.current_index, error);
+                    Token = result.nameToken;
                 }
                 if(Token == RPARENT){
                     result = getToken(letters, digits, str, result.current_char, result.current_index, error);
@@ -421,60 +484,84 @@ void block(char*str, char ch, int current_index, int &error){
                     if(Token == SEMICOLON){
                         result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
-                        block(str, result.current_char, result.current_index, error);
+                        result = block(str, result.current_char, result.current_index, error);
                         result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
                         if(Token == SEMICOLON){
                             result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                             Token = result.nameToken;
-                            flag_procedure = true;
+                            return result;
+                        }
+                        else{
+                            error = 1;
+                            printf("Thieu dau cham phay...");
                         }
                     }
+                    else{
+                        error = 1;
+                        printf("Thieu dau cham phay...");
+                    }
+                }
+                else{
+                    error = 1;
+                    printf("Thieu dau ngoac tron...");
+                }
+            }
+            else{
+                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                Token = result.nameToken;
+                if(Token == SEMICOLON){
+                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    Token = result.nameToken;
+                    result = block(str, result.current_char, result.current_index, error);
+                    Token = result.nameToken;
+                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    Token = result.nameToken;
+                    if(Token == SEMICOLON){
+                        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                        Token = result.nameToken;
+                        return result;
+                    }
+                    else{
+                        error = 1;
+                        printf("Thieu dau cham phay...");
+                    }
+                }
+                else{
+                    error = 1;
+                    printf("Thieu dau cham phay...");
                 }
             }
         }
-    }
-    if(Token == BEGIN){
-        if(flag_const == false && flag_procedure == false && flag_var == false){
-            result = getToken(letters, digits, str, ch, current_index, error);
-            Token = result.nameToken;
-        }
         else{
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
-            Token = result.nameToken;
+            error = 1;
+            printf("Thieu ten IDENT...");
         }
-        statement(str, result.current_char, result.current_index, error);
+    }
+    else if(Token == BEGIN){
+        result = getToken(letters, digits, str, ch, current_index, error);
+        Token = result.nameToken;
+        result = statement(str, result.current_char, result.current_index, error);
+        Token = result.nameToken;
         while(Token == SEMICOLON){
             result = getToken(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
-            statement(str, result.current_char, result.current_index, error);
+            result = statement(str, result.current_char, result.current_index, error);
+            Token = result.nameToken;
         }
         if(Token == END){
             result = getToken(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
+            return result;
+        }
+        else{
+            error = 1;
+            printf("Thieu tu khoa END...");
         }
     }
 }
 
-TokenType parameters(char*str, char ch, int current_index, int &error){
-    State result;
-    if(Token == VAR){
-        result = getToken(letters, digits, str, ch, current_index, error);
-        Token = result.nameToken;
-        if(Token == IDENT){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
-            Token = result.nameToken;
-        }
-        return Token;
-    }
-    else if(Token == IDENT){
-        result = getToken(letters, digits, str, ch, current_index, error);
-        Token = result.nameToken;
-        return Token;
-    }
-}
-
-void program(char*str, char ch, int current_index, int &error){
+State program(char*str, char ch, int current_index, int &error){
     State result;
     if(Token == PROGRAM){
         result = getToken(letters, digits, str, ch, current_index, error);
@@ -485,7 +572,8 @@ void program(char*str, char ch, int current_index, int &error){
             if(Token == SEMICOLON){
                 result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
-                block(str, result.current_char, result.current_index, error);
+                result = block(str, result.current_char, result.current_index, error);
+                Token = result.nameToken;
                 if(Token == PERIOD){
                     printf("Thanh cong...");
                 }
@@ -510,7 +598,6 @@ void compile(char* filename){
 	int error = 0;
     char line[MAX_CHARACTER_IN_LINE];
     FILE* file = fopen(filename, "r");
-	//initial_TokenArray(TokenArray);
     while (fgets(line, sizeof(line), file)) {
         int len = strlen(line); // do dai cua dong trong file
         State result = getToken(letters, digits, line, line[0], 0, error);
