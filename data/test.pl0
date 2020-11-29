@@ -1,1 +1,1 @@
-A[C-D+E-F]>=B
+ PROGRAM TEST; VAR a; PROCEDURE ten; BEGIN a := a + 1 END; BEGIN CALL ten; END.

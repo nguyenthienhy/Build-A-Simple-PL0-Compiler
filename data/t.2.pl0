@@ -1,3 +1,4 @@
+PROGRAM TEST;
 PROCEDURE outer;
     CONST y = 3;
     VAR x, t, g;
@@ -7,20 +8,18 @@ PROCEDURE outer;
 
         PROCEDURE inner2;
         BEGIN
-            ! 444 * z
+            z:=444 * z
         END;
 
     BEGIN
         CALL inner2;
-        ! 33
     END;
 
 BEGIN
     CALL inner;
-    ! 3
 END;
 
 BEGIN
-    CALL outer
+    CALL outer;
 END
 .

@@ -5,6 +5,8 @@
 #include<ctype.h>
 #include "lexical_analysis.h"
 
+int error_number = 0;
+
 State getToken(char* letters, char* digits, char* str, char ch, int current_index, int &error){ // lay ra tat ca cac token trong mot file code
 	/*
 		letters : bộ chữ
@@ -132,6 +134,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 		}
 		if (length_lexical > 6){
 			error = 1;
+			error_number = 1;
 			char lexical_fix_two[6];
 			for(int i = 0; i < 6; i ++){
 				lexical_fix_two[i] = lexical_fix[i];
@@ -472,6 +475,7 @@ State getToken(char* letters, char* digits, char* str, char ch, int current_inde
 //     while (fgets(line, sizeof(line), file)) {
 //         int len = strlen(line); // do dai cua dong trong file
 //         State result = getToken(letters, digits, line, line[0], 0, error);
+// 		printf("%d", result.nameToken);
 // 		if(error == 1){
 // 			break;
 // 		}

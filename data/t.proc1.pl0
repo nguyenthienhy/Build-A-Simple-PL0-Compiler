@@ -1,9 +1,8 @@
-{ Output: 10 }
-
+PROGRAM TEST;
+VAR a = 10;
 PROCEDURE ten;
 BEGIN
-    ! 10
-END;
-
+    a := a + 1;
+END
 CALL ten
 .

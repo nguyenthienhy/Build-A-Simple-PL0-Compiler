@@ -15,47 +15,58 @@ State program(char*str, char ch, int current_index, int &error);
 
 TokenType Token;
 
+State getTokenRenew(char* letters, char* digits, char* str, char ch, int current_index, int &error){
+    State result = getToken(letters, digits, str, ch, current_index, error);
+    Token = result.nameToken;
+    while(Token == NONE){
+        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+        Token = result.nameToken;
+    }
+    return result;
+}
+
 State factor(char*str, char ch, int current_index, int &error){
     State result;
     if(Token == IDENT){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         if(Token == LBRACK){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             result = expression(str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             if(Token == RBRACK){
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
             }
             else{
                 error = 1;
-                printf("Thieu dau ngoac vuong...");
+                printf("Thieu dau ngoac vuong tai factor...");
             }
         }
         return result;
     }
     else if(Token == NUMBER){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         return result;
     }
     else if(Token == LPARENT){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         result = expression(str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         if(Token == RPARENT){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             return result;
         }
         else{
             error = 1;
-            printf("Thieu dau ngoac...");
+            printf("Thieu dau ngoac tron tai factor...");
         }
     }
+    return result;
 }
 
 State term(char*str, char ch, int current_index, int &error){
@@ -63,7 +74,7 @@ State term(char*str, char ch, int current_index, int &error){
     result = factor(str, ch, current_index, error);
     Token = result.nameToken;
     while(Token == TIMES || Token == SLASH || Token == PERCENT){
-        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         result = factor(str, result.current_char, result.current_index, error);
         Token = result.nameToken;
@@ -75,7 +86,7 @@ State expression(char*str, char ch, int current_index, int &error){
     State result;
     bool flag_odd = false;
     if(Token == PLUS || Token == MINUS){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         flag_odd = true;
     }
@@ -87,7 +98,7 @@ State expression(char*str, char ch, int current_index, int &error){
     }
     Token = result.nameToken;
     while(Token == PLUS || Token == MINUS){
-        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         result = term(str, result.current_char, result.current_index, error);
         Token = result.nameToken;
@@ -98,7 +109,7 @@ State expression(char*str, char ch, int current_index, int &error){
 State condition(char*str, char ch, int current_index, int &error){
     State result;
     if(Token == ODD){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         result = expression(str, result.current_char, result.current_index, error);
         Token = result.nameToken;
@@ -107,7 +118,7 @@ State condition(char*str, char ch, int current_index, int &error){
     else{
         result = expression(str, ch, current_index, error);
         if(Token == EQU || Token == NEQ || Token == LSS || Token == LEQ || Token == GTR || Token == GEQ){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             result = expression(str, result.current_char, result.current_index, error);
             Token = result.nameToken;
@@ -115,26 +126,27 @@ State condition(char*str, char ch, int current_index, int &error){
         }
         else{
             error = 1;
-            printf("Loi cu phap...");
+            printf("Loi cu phap tai condition...");
         }
     }
+    return result;
 }
 
 State statement(char*str, char ch, int current_index, int &error){
     State result;
     if(Token == IDENT){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         if(Token == LBRACK){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             result = expression(str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             if(Token == RBRACK){
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 if(Token == ASSIGN){
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                     result = expression(str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
@@ -142,16 +154,16 @@ State statement(char*str, char ch, int current_index, int &error){
                 }
                 else{
                     error = 1;
-                    printf("Thieu toan tu gan...");
+                    printf("Thieu toan tu gan tai statement...");
                 }
             }
             else{
                 error = 1;
-                printf("Thieu dau ngoac vuong...");
+                printf("Thieu dau ngoac vuong tai statement...");
             }
         }
         else if(Token == ASSIGN){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             result = expression(str, result.current_char, result.current_index, error);
             Token = result.nameToken;
@@ -159,73 +171,75 @@ State statement(char*str, char ch, int current_index, int &error){
         }
         else{
             error = 1;
-            printf("Thieu toan tu gan...");
+            printf("Thieu toan tu gan tai statement...");
         }
     }
     else if(Token == CALL){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         if(Token == IDENT){
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
+            Token = result.nameToken;
             if(Token == LPARENT){
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 result = expression(str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 while(Token == COMMA){
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                     result = expression(str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                 }
                 if(Token == RPARENT){
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                 }
                 else{
                     error = 1;
-                    printf("Thieu dau ngoac...");
+                    printf("Thieu dau ngoac trong tai statement...");
                 }
             }
             return result;
         }
         else{
             error = 1;
-            printf("Thieu ten thu tuc/ham...");
+            printf("Thieu ten thu tuc/ham tai statement...");
         }
     }
     else if(Token == BEGIN){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         result = statement(str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         while(Token == SEMICOLON){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             result = statement(str, result.current_char, result.current_index, error);
             Token = result.nameToken;
         }
         if(Token == END){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             return result;
         }
         else{
             error = 1;
-            printf("Thieu tu khoa END...");
+            printf("Thieu tu khoa END tai statement...");
         }
     }
     else if(Token == IF){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         result = condition(str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         if(Token == THEN){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             result = statement(str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             if(Token == ELSE){
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 result = statement(str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
@@ -234,16 +248,16 @@ State statement(char*str, char ch, int current_index, int &error){
         }
         else{
             error = 1;
-            printf("Thieu thu tuc THEN...");
+            printf("Thieu thu tuc THEN tai statement...");
         }
     }
     else if(Token == WHILE){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         result = condition(str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         if(Token == DO){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             result = statement(str, result.current_char, result.current_index, error);
             Token = result.nameToken;
@@ -251,27 +265,27 @@ State statement(char*str, char ch, int current_index, int &error){
         }
         else{
             error = 1;
-            printf("Thieu thu tuc DO...");
+            printf("Thieu thu tuc DO tai statement...");
         }
     }
     else if(Token == FOR){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         if(Token == IDENT){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             if(Token == ASSIGN){
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 result = expression(str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 if(Token == TO){
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                     result = expression(str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                     if(Token == DO){
-                        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
                         result = statement(str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
@@ -279,298 +293,287 @@ State statement(char*str, char ch, int current_index, int &error){
                     }
                     else{
                         error = 1;
-                        printf("Thieu thu tuc DO...");
+                        printf("Thieu thu tuc DO tai statement...");
                     }
                 }
                 else{
                     error = 1;
-                    printf("Thieu thu tuc TO...");
+                    printf("Thieu thu tuc TO tai statement...");
                 }
             }
             else{
                 error = 1;
-                printf("Thieu toan tu gan...");
+                printf("Thieu toan tu gan tai statement...");
             }
         }
         else{
             error = 1;
-            printf("Thieu ten IDENT...");
+            printf("Thieu ten IDENT tai statement...");
         }
     }
+    return result;
 }
 
 State parameters(char*str, char ch, int current_index, int &error){
     State result;
     if(Token == VAR){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         if(Token == IDENT){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
         }
         return result;
     }
     else if(Token == IDENT){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         return result;
     }
+    return result;
 }
 
 State block(char*str, char ch, int current_index, int &error){
-    State result;
+    State result = create_state(NONE, (char*)"NONE", ch, current_index, 4);
     if(Token == CONST){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         if(Token == IDENT){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             if(Token == EQU){
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 if(Token == NUMBER){
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                     while(Token == COMMA){
-                        result = getToken(letters, digits, str, ch, current_index, error);
+                        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
                         if(Token == IDENT){
-                            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                             Token = result.nameToken;
                             if(Token == EQU){
-                                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                                 Token = result.nameToken;
                                 if(Token == NUMBER){
-                                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                                     Token = result.nameToken;
                                 }
                                 else{
                                     error = 1;
-                                    printf("Thieu gia tri duoc gan...");
+                                    printf("Thieu gia tri duoc gan tai block...");
                                 }
                             }
                             else{
                                 error = 1;
-                                printf("Thieu tu khoa EQU...");
+                                printf("Thieu tu khoa EQU tai block...");
                             }
                         }
                         else{
                             error = 1;
-                            printf("Thieu ten IDENT...");
+                            printf("Thieu ten IDENT tai block...");
                         }
                     }
                     if(Token == SEMICOLON){
-                        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
-                        return result;
                     }
                     else{
                         error = 1;
-                        printf("Thieu dau cham phay...");
+                        printf("Thieu dau cham phay tai block...");
                     }
                 }
                 else{
                     error = 1;
-                    printf("Thieu gia tri gan cho CONST...");
+                    printf("Thieu gia tri gan cho CONST tai block...");
                 }
             }
             else{
                 error = 1;
-                printf("Thieu tu khoa EQU...");
+                printf("Thieu tu khoa EQU tai block...");
             }
         }
         else{
             error = 1;
-            printf("Thieu ten IDENT...");
+            printf("Thieu ten IDENT tai block...");
         }
     }
-    else if(Token == VAR){
-        result = getToken(letters, digits, str, ch, current_index, error);
+    if(Token == VAR){
+        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         if(Token == IDENT){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             if(Token == LBRACK){
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 if(Token == NUMBER){
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                     if(Token == RBRACK){
-                        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
                     }
                     else{
                         error = 1;
-                        printf("Thieu dau ngoac vuong...");
+                        printf("Thieu dau ngoac vuong tai block...");
                     }
                 }
                 else{
                     error = 1;
-                    printf("Thieu chi so cho mang...");
+                    printf("Thieu chi so cho mang block...");
                 }
             }
             while(Token == COMMA){
-                result = getToken(letters, digits, str, ch, current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 if(Token == IDENT){
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                     if(Token == LBRACK){
-                        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
                         if(Token == NUMBER){
-                            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                             Token = result.nameToken;
                             if(Token == RBRACK){
-                                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                                 Token = result.nameToken;
                             }
                             else{
                                 error = 1;
-                                printf("Thieu dau ngoac vuong...");
+                                printf("Thieu dau ngoac vuong tai block...");
                             }
                         }
                         else{
                             error = 1;
-                            printf("Thieu chi so cho mang...");
+                            printf("Thieu chi so cho mang tai block...");
                         }
-                    }
-                    else{
-                        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
-                        Token = result.nameToken; 
                     }
                 }
                 else{
                     error = 1;
-                    printf("Thieu ten IDENT...");
+                    printf("Thieu ten IDENT tai block...");
                 }
             }
             if(Token == SEMICOLON){
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
-                return result;
             }
             else{
                 error = 1;
-                printf("Thieu dau cham phay...");
+                printf("Thieu dau cham phay tai block...");
             }
         }
         else{
             error = 1;
-            printf("Thieu ten IDENT...");
+            printf("Thieu ten IDENT tai block...");
         }
     }
-    else if(Token == PROCEDURE){
-        result = getToken(letters, digits, str, ch, current_index, error);
+    if(Token == PROCEDURE){
+        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         if(Token == IDENT){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             if(Token == LPARENT){
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 result = parameters(str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 while(Token == SEMICOLON){
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                     result = parameters(str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                 }
                 if(Token == RPARENT){
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                     if(Token == SEMICOLON){
-                        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
                         result = block(str, result.current_char, result.current_index, error);
-                        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
                         if(Token == SEMICOLON){
-                            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                             Token = result.nameToken;
-                            return result;
                         }
                         else{
                             error = 1;
-                            printf("Thieu dau cham phay...");
+                            printf("Thieu dau cham phay tai block...");
                         }
                     }
                     else{
                         error = 1;
-                        printf("Thieu dau cham phay...");
+                        printf("Thieu dau cham phay tai block...");
                     }
                 }
                 else{
                     error = 1;
-                    printf("Thieu dau ngoac tron...");
+                    printf("Thieu dau ngoac tron tai block...");
                 }
             }
             else{
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
-                Token = result.nameToken;
                 if(Token == SEMICOLON){
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                    result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
                     result = block(str, result.current_char, result.current_index, error);
                     Token = result.nameToken;
-                    result = getToken(letters, digits, str, result.current_char, result.current_index, error);
-                    Token = result.nameToken;
                     if(Token == SEMICOLON){
-                        result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                         Token = result.nameToken;
-                        return result;
                     }
                     else{
                         error = 1;
-                        printf("Thieu dau cham phay...");
+                        printf("Thieu dau cham phay tai block...");
                     }
                 }
                 else{
                     error = 1;
-                    printf("Thieu dau cham phay...");
+                    printf("Thieu dau cham phay tai block...");
                 }
             }
         }
         else{
             error = 1;
-            printf("Thieu ten IDENT...");
+            printf("Thieu ten IDENT tai block...");
         }
     }
-    else if(Token == BEGIN){
-        result = getToken(letters, digits, str, ch, current_index, error);
+    if(Token == BEGIN){
+        result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         result = statement(str, result.current_char, result.current_index, error);
         Token = result.nameToken;
         while(Token == SEMICOLON){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             result = statement(str, result.current_char, result.current_index, error);
             Token = result.nameToken;
         }
         if(Token == END){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
-            return result;
         }
         else{
             error = 1;
-            printf("Thieu tu khoa END...");
+            printf("Thieu tu khoa END tai block...");
         }
     }
+    return result;
 }
 
 State program(char*str, char ch, int current_index, int &error){
     State result;
     if(Token == PROGRAM){
-        result = getToken(letters, digits, str, ch, current_index, error);
+        result = getTokenRenew(letters, digits, str, ch, current_index, error);
         Token = result.nameToken;
         if(Token == IDENT){
-            result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+            result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
             Token = result.nameToken;
             if(Token == SEMICOLON){
-                result = getToken(letters, digits, str, result.current_char, result.current_index, error);
+                result = getTokenRenew(letters, digits, str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 result = block(str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
@@ -592,24 +595,38 @@ State program(char*str, char ch, int current_index, int &error){
     else{
         printf("Thieu tu khoa PROGRAM...");
     }
+    return result;
 }
 
 void compile(char* filename){
 	int error = 0;
     char line[MAX_CHARACTER_IN_LINE];
+    char lines[MAX_CHARACTER_IN_LINE];
+    lines[0] = ' ';
     FILE* file = fopen(filename, "r");
     while (fgets(line, sizeof(line), file)) {
-        int len = strlen(line); // do dai cua dong trong file
-        State result = getToken(letters, digits, line, line[0], 0, error);
-        Token = result.nameToken;
-        result = condition(line, result.current_char, result.current_index, error);
-        printf("%d", result.nameToken);
+    	int len = strlen(line);
+    	if(line[len - 1] == '\n' || line[len - 1] == '\t')
+    		line[len - 1] = ' ';
+        strcat(lines, line);
+        strcat(lines, " ");
     }
+    for(int i = 0 ; i < 200 ; i ++){
+        printf("%c", lines[i]);
+    }
+    initial_TokenArray(TokenArray);
+    State result;
+    result = getTokenRenew(letters, digits, lines, lines[0], 0, error);
+    Token = result.nameToken;
+    if(error_number == 1){
+        printf("Loi so qua lon...");
+    }
+    result = program(lines, result.current_char, result.current_index, error);
 	fclose(file);
 }
 
 int	main(int argc, char * argv[]){
-	if(argc == 1) compile((char*)"data/test.pl0");
+	if(argc == 1) compile((char*)"data/t.2.pl0");
     else if(argc == 2) compile((char*)argv[1]); 
 	else printf("Syntax error \n");
  	return 0;

@@ -1,4 +1,4 @@
-f = open("t.3.pl0", "r")
+f = open("t.proc1.pl0", "r")
 codes = f.readlines()
 codes = [line.replace("\n", "") for line in codes]
 
