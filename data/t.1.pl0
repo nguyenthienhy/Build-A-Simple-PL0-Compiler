@@ -9,6 +9,6 @@ BEGIN
     counter := min;
     WHILE counter < max DO
     BEGIN
-        counter := counter + step
+        counter := counter + step;
     END
 END.

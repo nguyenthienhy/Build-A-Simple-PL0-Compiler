@@ -1,34 +1,32 @@
+PROGRAM TEST;
 VAR x, y;
 
 PROCEDURE cmp;
 BEGIN
-    IF x = y THEN ! 0;
-    IF x > y THEN ! 1;
-    IF x < y THEN ! -1;
+    IF x = y THEN x:=y;
+    IF x > y THEN x:=y;
+    IF x < y THEN x:=y;
 
-    IF x # y THEN ! 2;
-    IF y # x THEN ! 3;
+    IF x <> y THEN x:=y;
+    IF y <> x THEN x:=y;
 
-    IF x <= y THEN ! 4;
-    IF y <= x THEN ! 5;
+    IF x <= y THEN x:=y;
+    IF y <= x THEN x:=y;
 
-    IF ODD x THEN ! 6;
+    IF ODD x THEN x:=y;
 END;
 
 BEGIN
-    { Output: 0 4 5 6 }
     x := 5;
     y := 5;
     CALL cmp;
 
-    { Output: 1 2 3 5 }
     x := 6;
     y := 5;
     CALL cmp;
 
-    { Output: -1 2 3 4 6 }
     x := 5;
     y := 6;
-    CALL cmp
+    CALL cmp;
 END
 .

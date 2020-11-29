@@ -578,7 +578,8 @@ State program(char*str, char ch, int current_index, int &error){
                 result = block(str, result.current_char, result.current_index, error);
                 Token = result.nameToken;
                 if(Token == PERIOD){
-                    printf("Thanh cong...");
+                    if(error == 0)
+                        printf("Thanh cong...");
                 }
                 else{
                     printf("Thieu dau cham cau...");
@@ -611,9 +612,6 @@ void compile(char* filename){
         strcat(lines, line);
         strcat(lines, " ");
     }
-    for(int i = 0 ; i < 200 ; i ++){
-        printf("%c", lines[i]);
-    }
     initial_TokenArray(TokenArray);
     State result;
     result = getTokenRenew(letters, digits, lines, lines[0], 0, error);
@@ -626,7 +624,7 @@ void compile(char* filename){
 }
 
 int	main(int argc, char * argv[]){
-	if(argc == 1) compile((char*)"data/t.2.pl0");
+	if(argc == 1) compile((char*)"data/t.cond.pl0");
     else if(argc == 2) compile((char*)argv[1]); 
 	else printf("Syntax error \n");
  	return 0;
