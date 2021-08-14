@@ -1,1 +1,1 @@
-# Xây dựng bộ phân tích từ vựng, ngữ pháp cho ngôn ngữ PL0 mở rộng
+# Building a lexical and grammar analyzer for the extended PL0 language
